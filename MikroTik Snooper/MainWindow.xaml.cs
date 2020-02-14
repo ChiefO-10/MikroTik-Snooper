@@ -7,11 +7,11 @@ namespace MikroTikSnooper
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ComboBoxViewModel ComboBox { get; set; }
         public MainWindow()
         {           
             InitializeComponent();
-            this.DataContext = new ViewModel();
+            this.DataContext = new ViewModels();
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

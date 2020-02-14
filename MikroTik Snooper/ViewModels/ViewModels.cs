@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MikroTikSnooper
 {
-    public class ViewModel
+    public class ViewModels
     {
-        public ComboBoxViewModel ComboBox { get; } = new ComboBoxViewModel();
+        public ComboBoxViewModel ComboBoxWlan { get; } = new ComboBoxViewModel();
         public SnooperListViewModel SnooperList { get; } = new SnooperListViewModel();
 
     }
