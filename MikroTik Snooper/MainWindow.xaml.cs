@@ -11,7 +11,9 @@ namespace MikroTikSnooper
         {           
             InitializeComponent();
             this.DataContext = new ViewModels();
-
+            Snooper x = new Snooper();
+            x.FileName = @"C:\Users\astat\Desktop\myfile.txt";
+            x.Snooping();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

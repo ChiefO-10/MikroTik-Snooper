@@ -11,45 +11,43 @@ namespace MikroTikSnooper
     public class Snooper
     {
         #region Properties Declaration
-        public string IP { get; set; }
-        public string Login { get; set; }
-        public string Password { get; set; }
-        public string FileName { get; set; }
-        private List<string[]> SnoopData { get; set; }
-        public string Channel { get; }
+        public string FilePath { get; }
         public string Wlan { get; set; }
+        List<Channel> ChannelsList { get; set; }
         #endregion
 
         #region Constructors
         public Snooper()
         {
-            IP = null;
-            Login = null;
-            Password = null;
+            string folderLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string myPath = Path.Combine(folderLocation, "SnoopData");
+            this.FilePath = myPath;
+            ChannelsList = new List<Channel>();
         }
-        public Snooper(string myIP, string myLogin, string myPassword)
-        {
-            IP = myIP;
-            Login = myLogin;
-            Password = myPassword;
-        }
+
         #endregion
 
-        #region [Method] Connection Setup
-        private bool SnoopCommandSend(string Network, MK link )
+        #region [Method] SnoopCommandSend
+        /// <summary>
+        /// Creates snoop file txt in given directory
+        /// </summary>
+        /// <param name="Network"></param>
+        /// <param name="link"></param>
+        /// <returns></returns>
+        private bool SnoopCommandSend(MK link )
         {
-            if (string.IsNullOrEmpty(Network))
+            if (link == null)
             {
-                throw new ArgumentException("Wlan not chosen", nameof(Network));
+                throw new ArgumentException("Wlan not chosen", nameof(link));
             }
 
             try
             {
                 link.Send("/interface/wireless/snooper/snoop"); // uruchomienie snoopera
-                link.Send("=interface=" + Network);
+                link.Send("=interface=" + this.Wlan);
                 link.Send(".tag=sss", true);
 
-                link.Send("/interface wireless snooper{snoop interface=\"" + Network + "\" file=\"" + this.FileName + "\";}"); //zapisanie danych snoopera do pliku
+                link.Send("/interface wireless snooper{snoop interface=\"" + this.Wlan + "\" file=\"" + this.FilePath + "\";}"); //zapisanie danych snoopera do pliku
                 //ex .link.Send("/interface wireless snooper{snoop interface=\"wlan1\" file=\"myfile\";}");  
                 /*  link.Send(""); // zatrzymanie snoopera
                     link.Send(""); // pobranie pliku z routera?
@@ -65,19 +63,18 @@ namespace MikroTikSnooper
 
         #region [Method] Snooping 
         /// <summary>
-        /// Establish connection
+        /// Data aquisition
         /// </summary>
         /// <returns></returns>
-        public string[][] Snooping()
+        public void Snooping()
         {
             // this.ConnectionSetup(this.Wlan);
-
-            string myFile = @"C:\Users\Rafal\Desktop\" + this.FileName; // zródło
+            
             int header = 4; // liczba linii nagłówkowych
             int snoopParams = 7; //liczba zbieranych info [Channel] [Width] [Use %] [BW [bps]] [ Net Count] [Noise floor] [STA-Count]
-            var lines = File.ReadAllLines(myFile);
+            var lines = System.IO.File.ReadAllLines(this.FilePath);
 
-            string[][] data = new string[lines.Length][]; // [liczba linijek z txt (bez headera)] [parametry ze snoopera (7)]
+            string[][] data = new string[lines.Length-header][]; // [liczba linijek z txt (bez headera)] [parametry ze snoopera (7)]
             for (int i = header; i < lines.Length; i++)
             {
                 string[] tempSplit = lines[i].Split(new string[] { " ","/","bps" },StringSplitOptions.RemoveEmptyEntries);
@@ -87,53 +84,57 @@ namespace MikroTikSnooper
                 {
                     if (!(String.IsNullOrWhiteSpace(tempSplit[j])) && tempSplit[j] != "DP" && tempSplit[j] != "ac")
                     {
-
                         string raw = tempSplit[j].Trim('%');
                         data[i - header][j - skip] = raw;
                     }
                     else skip++;
                 }
+               
             }
-            #endregion
-/*
-            List<string[]> snoopDataTemp = new List<string[]>();   tranformacja z jagged array na listę
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
-                snoopDataTemp.Add(data[i]);
-            }
-            string[] a = new string[2];
-            a = snoopDataTemp[0];
-            a = snoopDataTemp[1];
-            a = snoopDataTemp[2];
-
-            SnoopData = snoopDataTemp;
-            return SnoopData;
-*/
-
-/*
-{
-    //private List<String> _nets = new List<string>();
-    public List<String> Nets { get; set; }
-    public List<String> GetNetworks() 
-    {
-        var networks = NetworkInterface.GetAllNetworkInterfaces();
-        foreach (NetworkInterface adapter in networks)
-        {
-            if (adapter.OperationalStatus == OperationalStatus.Up)
-            {
-                if (adapter.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 && adapter.Name == "WiFi")
-                {
-                    //List<String> temp = new List<string>();
-                    //temp.Add(adapter.Name);
-                    this.Nets.Add(adapter.Name);
+                if (data[i] != null)
+                { 
+                Channel Channel = new Channel();
+                Channel.Fequency = data[i][0] ?? "0";
+                Channel.FeqWidth = data[i][1] ?? "0";
+                Channel.UsePercentage = data[i][2] ?? "0";
+                Channel.BandWidth = data[i][3] ?? "0";
+                Channel.NetCount = data[i][4] ?? "0";
+                Channel.NoiseFloor = data[i][5] ?? "0";
+                Channel.StationCount = data[i][6] ?? "0";
+                ChannelsList.Add(Channel);
                 }
             }
+
+
+
+
+            /*
+            {
+                //private List<String> _nets = new List<string>();
+                public List<String> Nets { get; set; }
+                public List<String> GetNetworks() 
+                {
+                    var networks = NetworkInterface.GetAllNetworkInterfaces();
+                    foreach (NetworkInterface adapter in networks)
+                    {
+                        if (adapter.OperationalStatus == OperationalStatus.Up)
+                        {
+                            if (adapter.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 && adapter.Name == "WiFi")
+                            {
+                                //List<String> temp = new List<string>();
+                                //temp.Add(adapter.Name);
+                                this.Nets.Add(adapter.Name);
+                            }
+                        }
+                    }
+                    return this.Nets ;
+                }
+            }
+            */
         }
-        return this.Nets ;
-    }
-}
-*/
-            return data;
-        }
+        #endregion
+
     }
 }
