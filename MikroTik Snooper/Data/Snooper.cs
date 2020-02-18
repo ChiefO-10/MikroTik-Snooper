@@ -11,16 +11,21 @@ namespace MikroTikSnooper
     public class Snooper
     {
         #region Properties Declaration
+        //Constant file name
+        private const string FileName = "SnoopData.txt";
+        //Storage for file path 
         public string FilePath { get; }
+
+        public static MK Mk { get; set; }
         public string Wlan { get; set; }
-        List<Channel> ChannelsList { get; set; }
+        public List<Channel> ChannelsList { get; set; }
         #endregion
 
         #region Constructors
         public Snooper()
         {
             string folderLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string myPath = Path.Combine(folderLocation, "SnoopData");
+            string myPath = Path.Combine(folderLocation, FileName);
             this.FilePath = myPath;
             ChannelsList = new List<Channel>();
         }
@@ -32,22 +37,18 @@ namespace MikroTikSnooper
         /// Creates snoop file txt in given directory
         /// </summary>
         /// <param name="Network"></param>
-        /// <param name="link"></param>
+        /// <param name="MT"></param>
         /// <returns></returns>
-        private bool SnoopCommandSend(MK link )
+        private bool SnoopCommandSend()
         {
-            if (link == null)
-            {
-                throw new ArgumentException("Wlan not chosen", nameof(link));
-            }
-
+     
             try
             {
-                link.Send("/interface/wireless/snooper/snoop"); // uruchomienie snoopera
-                link.Send("=interface=" + this.Wlan);
-                link.Send(".tag=sss", true);
+                MT.Send("/interface/wireless/snooper/snoop"); // uruchomienie snoopera
+                MT.Send("=interface=" + this.Wlan);
+                MT.Send(".tag=sss", true);
 
-                link.Send("/interface wireless snooper{snoop interface=\"" + this.Wlan + "\" file=\"" + this.FilePath + "\";}"); //zapisanie danych snoopera do pliku
+                MT.Send("/interface wireless snooper{snoop interface=\"" + this.Wlan + "\" file=\"" + this.FilePath + "\";}"); //zapisanie danych snoopera do pliku
                 //ex .link.Send("/interface wireless snooper{snoop interface=\"wlan1\" file=\"myfile\";}");  
                 /*  link.Send(""); // zatrzymanie snoopera
                     link.Send(""); // pobranie pliku z routera?

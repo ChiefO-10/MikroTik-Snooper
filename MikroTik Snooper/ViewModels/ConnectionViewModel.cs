@@ -6,12 +6,23 @@ using System.Threading.Tasks;
 
 namespace MikroTikSnooper
 {
-    public class ComboBoxViewModel : BaseViewModel
+    public class ConnectionViewModel : BaseViewModel
     {
+        private string _ip;
         private string _login;
         private string _password;
         private ObservableCollection<string> _wlan = new ObservableCollection<string> { "wlan1", "wlan2" };
 
+        public string IP
+        {
+            get { return _ip; }
+            set
+            {
+                if (_ip == value) return;
+                _ip = value;
+                OnPropertyChanged();
+            }
+        }
         public string Login
         {
             get { return _login; }
@@ -40,7 +51,7 @@ namespace MikroTikSnooper
             set
             {
                 if (_wlan == value) return;
-                _wlan = WirelessNetwork.WirelessNets;
+                _wlan = Mk.WirelessNets;
                 OnPropertyChanged();
             }
         }

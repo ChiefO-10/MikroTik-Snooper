@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MikroTikSnooper
 {
-    class Channel
+    public class Channel
     {
         public string Fequency { get; set; }
         public string FeqWidth { get; set; }
