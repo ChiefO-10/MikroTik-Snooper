@@ -15,7 +15,6 @@ namespace MikroTikSnooper
         private const string FileName = "SnoopData.txt";
         //Storage for file path 
         public string FilePath { get; }
-
         public static MK Mk { get; set; }
         public string Wlan { get; set; }
         public List<Channel> ChannelsList { get; set; }
@@ -41,14 +40,14 @@ namespace MikroTikSnooper
         /// <returns></returns>
         private bool SnoopCommandSend()
         {
-     
+            if (Mk == null) return false;
             try
             {
-                MT.Send("/interface/wireless/snooper/snoop"); // uruchomienie snoopera
-                MT.Send("=interface=" + this.Wlan);
-                MT.Send(".tag=sss", true);
+                Mk.Send("/interface/wireless/snooper/snoop"); // uruchomienie snoopera
+                Mk.Send("=interface=" + this.Wlan);
+                Mk.Send(".tag=sss", true);
 
-                MT.Send("/interface wireless snooper{snoop interface=\"" + this.Wlan + "\" file=\"" + this.FilePath + "\";}"); //zapisanie danych snoopera do pliku
+                Mk.Send("/interface wireless snooper{snoop interface=\"" + this.Wlan + "\" file=\"" + this.FilePath + "\";}"); //zapisanie danych snoopera do pliku
                 //ex .link.Send("/interface wireless snooper{snoop interface=\"wlan1\" file=\"myfile\";}");  
                 /*  link.Send(""); // zatrzymanie snoopera
                     link.Send(""); // pobranie pliku z routera?

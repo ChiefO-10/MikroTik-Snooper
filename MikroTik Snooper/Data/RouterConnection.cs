@@ -1,40 +1,40 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace MikroTikSnooper
 {
     public class RouterConnection
     {
-        public static CommonMK Mk { get; set; }
+        public static MK Mk { get; set; }
+        public string IP { get; set; }
+        public string Login { get; set; }
+        public string Password { get; set; }
+        public List<string> WirelessNets { get; set; }
 
-        public RouterConnection(CommonMK common)
+        public void Connect()
         {
-            Mk = common;        
+           try
+           {
+               if ((!(string.IsNullOrWhiteSpace(Password))) && (!(string.IsNullOrWhiteSpace(Login)))) Mk.Login(Login, Password);
+               else MessageBox.Show("Input Login and Password");
+
+           }
+           catch (ArgumentException e)
+           {
+               Console.WriteLine("{0}", e);
+           }
         }
-        
-        public static bool Connect()
+        public bool GetWlans()
         {
+            Mk.Send("/interface list");
+            List<string>ConsoleRead = new List<string>(Mk.Read());
+            if (ConsoleRead != null)
             {
-                try
-                {
-
-                    if (!(string.IsNullOrWhiteSpace(RouterConnection.Mk.IP)))
-                    {
-                        if ((!(string.IsNullOrWhiteSpace(MikroTikSnooper.Mk.Password))) && (!(string.IsNullOrWhiteSpace(MikroTikSnooper.Mk.Login)))) MikroTikSnooper.Mk.MT.Login(MikroTikSnooper.Mk.Login, MikroTikSnooper.Mk.Password);
-                        else MessageBox.Show("Input Login and Password");
-                    }
-
-                    return true;
-
-                }
-                catch (ArgumentException e)
-                {
-                    Console.WriteLine("{0}", e);
-                    return false;
-                }
-
+                WirelessNets = ConsoleRead;
+                return true;
             }
+            else return false;
         }
     }
 }

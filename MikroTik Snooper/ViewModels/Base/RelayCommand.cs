@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace WpfTreeView
+namespace MikroTikSnooper
 {
     public class RelayCommand<T> : ICommand
     {
