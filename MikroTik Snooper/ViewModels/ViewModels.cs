@@ -8,7 +8,7 @@ namespace MikroTikSnooper
 {
     public class ViewModels
     {
-        public ConnectionViewModel ComboBoxWlan { get; } = new ConnectionViewModel();
+        public ConnectionViewModel ConnectionViewModel { get; } = new ConnectionViewModel();
         public SnooperListViewModel SnooperList { get; } = new SnooperListViewModel();
 
     }

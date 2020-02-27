@@ -6,11 +6,18 @@ namespace MikroTikSnooper
 {
     public class RouterConnection
     {
-        public static MK Mk { get; set; }
-        public string IP { get; set; }
+        public MK Mk { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
         public List<string> WirelessNets { get; set; }
+
+        public RouterConnection() { }
+        public RouterConnection (MK MicroTik, string login, string password)
+        {
+            Mk = MicroTik;
+            Login = login;
+            Password = password;
+        }
 
         public void Connect()
         {

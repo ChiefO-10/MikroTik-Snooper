@@ -12,6 +12,7 @@ namespace MikroTikSnooper
         private string _login;
         private string _password;
         private ObservableCollection<string> _wlan = new ObservableCollection<string> { "wlan1", "wlan2" };
+        private MK MK;
 
         #endregion
 
@@ -68,32 +69,42 @@ namespace MikroTikSnooper
         public ConnectionViewModel()
         {
 
-            Connection = new RouterConnection();
-            ConnectCommand = new RelayCommand<object> ( param => this.Connection.Connect(), 
-                                                        param => this.CanExecuteConnection());
-
-            GetWlansCommand = new RelayCommand<object>(param => this.Connection.GetWlans(),
-                                                       param => this.CanExecuteGetWlans());
-
+            _getWlansCommand = new RelayCommand<object>( param => this.Connection.GetWlans(),
+                                                        param => this.CanExecuteGetWlans());
 
         }
+
 
         #endregion
 
         #region Commands
+        private ICommand _connectCommand;
+        private ICommand _getWlansCommand;
+        public ICommand ConnectCommand 
+        { get
+            {
+                
+                if (IP!=null) MK = new MK(this.IP);
+                Connection = new RouterConnection(MK,Login,Password);
 
-        public ICommand ConnectCommand { get; set; }
+                _connectCommand = new RelayCommand<object>( param => this.Connection.Connect(),
+                                                            param => this.CanExecuteConnection());
+
+                return _connectCommand;
+            }
+        }
         public ICommand GetWlansCommand { get; set; }
         #endregion
 
         #region Can Execute Methods
         private bool CanExecuteGetWlans()
         {
-            return RouterConnection.Mk != null;
+            return MK != null;
         }
         private bool CanExecuteConnection()
         {
-            return RouterConnection.Mk != null && (!string.IsNullOrWhiteSpace(Password)) && (!string.IsNullOrWhiteSpace(Login));
+  
+            return MK != null && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Login);
         }
 
         #endregion

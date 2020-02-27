@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MikroTikSnooper"
         mc:Ignorable="d"
+            
         Title="Snooper" MinHeight="300" MinWidth="300" Height="450" Width="800">
     <Border Padding="10 10 0 10">
 
@@ -26,8 +27,9 @@
                         <ColumnDefinition Width="220"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <!-- IP -->
                     <GroupBox Header="IP" Width="220" Padding="2" Grid.Column="0">
-                        <TextBox Width="200"/>
+                        <TextBox Width="200" Text="{Binding Path=ConnectionViewModel.IP}"/>
                     </GroupBox>
                 </Grid>
 
@@ -43,17 +45,17 @@
                    
                     <!-- Login -->
                     <GroupBox Header="Login"  Grid.Row="1" Grid.Column="0">
-                        <TextBox MaxLines="1" MaxLength="50" Text="{Binding Path=ComboBoxWlan.Login}" />
+                        <TextBox MaxLines="1" MaxLength="50" Text="{Binding Path=ConnectionViewModel.Login}" />
                     </GroupBox>
                     <!-- Password -->
                     <GroupBox Header="Password"  Grid.Row="1" Grid.Column="1">
-                        <TextBox MaxLines="1" MaxLength="50" Text="{Binding Path=ComboBoxWlan.Password}"/>
+                        <TextBox MaxLines="1" MaxLength="50" Text="{Binding Path=ConnectionViewModel.Password}"/>
                     </GroupBox>
                 </Grid>
 
                 <!-- Row 2 - Net ComboBox -->
                 <GroupBox Header="WLAN"  DockPanel.Dock="Top" Padding="2" Margin="0 0 0 5">
-                    <ComboBox ItemsSource="{Binding Path= ComboBoxWlan.Wlan}" />
+                    <ComboBox ItemsSource="{Binding Path= ConnectionViewModel.Wlan}" />
                 </GroupBox>
 
                 <!-- Row 3 ListView  Channels -->
@@ -78,7 +80,7 @@
                 <UniformGrid HorizontalAlignment="Left" Grid.Column="1" Width="70">
 
                     <DockPanel  VerticalAlignment="Stretch" Grid.Column="1">
-                        <Button Content="Connect" x:Name="Connect"  DockPanel.Dock="Top" Grid.Row="0" Height="25" MinWidth="40" Margin="0 13 0 0" />
+                        <Button Content="Connect" x:Name="Connect" Command="{Binding Path=ConnectionViewModel.ConnectCommand}" DockPanel.Dock="Top" Grid.Row="0" Height="25" MinWidth="40" Margin="0 13 0 0" />
                         <Button Content="Snoop" x:Name="Snoop"  DockPanel.Dock="Top" Grid.Row="1" Height="25" MinWidth="40" Margin="0 20 0 5" Click="Snoop_Click"/>
                         <Button Content="Refresh" x:Name="Refresh" DockPanel.Dock="Top" Grid.Row="1" Height="25" MinWidth="40" Margin="0 5 0 5"/>
                         <Button Content="Disconnect" x:Name="Disconnect" DockPanel.Dock="Top" Grid.Row="2" Height="25" MinWidth="40" Margin="0 5 0 5"/>
