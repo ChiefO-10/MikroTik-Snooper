@@ -9,7 +9,7 @@ namespace MikroTikSnooper
         public MK Mk { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        public List<string> WirelessNets { get; set; }
+        public List<string> WirelessNets { get; private set; }
 
         public RouterConnection() { }
         public RouterConnection (MK MicroTik, string login, string password)
@@ -19,18 +19,60 @@ namespace MikroTikSnooper
             Password = password;
         }
 
-        public void Connect()
+        public void Connect(string IP, string Login, string Password, MK MK)
         {
-           try
-           {
-               if ((!(string.IsNullOrWhiteSpace(Password))) && (!(string.IsNullOrWhiteSpace(Login)))) Mk.Login(Login, Password);
-               else MessageBox.Show("Input Login and Password");
+            if (MK != null)
+            {
 
-           }
-           catch (ArgumentException e)
-           {
-               Console.WriteLine("{0}", e);
-           }
+                try
+                {
+                    this.Mk = MK;
+                    MK.Setup(IP);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                    return;
+                }
+
+                try
+                {
+                    var state = false;
+                    if ((!(string.IsNullOrWhiteSpace(Password))) && (!(string.IsNullOrWhiteSpace(Login))))
+                    {
+                        state = Mk.Login(Login, Password);
+                    }
+                    if (state)
+                    {
+                        this.Login = Login;
+                        this.Password = Password;
+                        Mk.Send("/interface list");
+                        List<string> ConsoleRead = new List<string>(Mk.Read());
+                        try
+                        {
+                            WirelessNets = ConsoleRead;
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            Console.WriteLine(e.ToString());
+                            MessageBox.Show(e.Message);
+                            throw;
+                        }
+                    }
+                
+                    else
+                    {
+                        throw new ArgumentException("Incorrect Login or Password");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                    MessageBox.Show(e.Message);
+                    return;
+                }
+            }
+
         }
         public bool GetWlans()
         {

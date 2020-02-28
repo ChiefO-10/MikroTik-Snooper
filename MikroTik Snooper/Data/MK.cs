@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
 using System.IO;
+using System.Windows;
 
 namespace MikroTikSnooper
 {
@@ -11,11 +12,21 @@ namespace MikroTikSnooper
         Stream connection;
         TcpClient con;
 
-        public MK(string ip)
+
+        public void Setup(string ip)
         {
-            con = new TcpClient();
-            con.Connect(ip, 8728);
-            connection = (Stream)con.GetStream();
+            try
+            {   
+                con = new TcpClient();
+                con.Connect(ip, 8728);
+                connection = (Stream)con.GetStream();
+            }
+            catch (SocketException e)
+            {
+                MessageBox.Show("Incorrect IP");
+                Console.WriteLine(e.ToString());
+                throw;
+            }
         }
         public void Close()
         {

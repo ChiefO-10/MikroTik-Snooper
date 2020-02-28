@@ -29,7 +29,7 @@
                     </Grid.ColumnDefinitions>
                     <!-- IP -->
                     <GroupBox Header="IP" Width="220" Padding="2" Grid.Column="0">
-                        <TextBox Width="200" Text="{Binding Path=ConnectionViewModel.IP}"/>
+                        <TextBox Width="200" Text="{Binding Path=ConnectionViewModel.IP, UpdateSourceTrigger=PropertyChanged}" />
                     </GroupBox>
                 </Grid>
 
@@ -45,11 +45,11 @@
                    
                     <!-- Login -->
                     <GroupBox Header="Login"  Grid.Row="1" Grid.Column="0">
-                        <TextBox MaxLines="1" MaxLength="50" Text="{Binding Path=ConnectionViewModel.Login}" />
+                        <TextBox MaxLines="1" MaxLength="50" Text="{Binding Path=ConnectionViewModel.Login, UpdateSourceTrigger=PropertyChanged}" />
                     </GroupBox>
                     <!-- Password -->
                     <GroupBox Header="Password"  Grid.Row="1" Grid.Column="1">
-                        <TextBox MaxLines="1" MaxLength="50" Text="{Binding Path=ConnectionViewModel.Password}"/>
+                        <TextBox MaxLines="1" MaxLength="50" Text="{Binding Path=ConnectionViewModel.Password, UpdateSourceTrigger=PropertyChanged}"/>
                     </GroupBox>
                 </Grid>
 

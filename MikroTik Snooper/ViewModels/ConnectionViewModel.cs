@@ -68,12 +68,9 @@ namespace MikroTikSnooper
 
         public ConnectionViewModel()
         {
-
-            _getWlansCommand = new RelayCommand<object>( param => this.Connection.GetWlans(),
-                                                        param => this.CanExecuteGetWlans());
-
+            MK = new MK();
+            Connection = new RouterConnection();
         }
-
 
         #endregion
 
@@ -81,19 +78,23 @@ namespace MikroTikSnooper
         private ICommand _connectCommand;
         private ICommand _getWlansCommand;
         public ICommand ConnectCommand 
-        { get
+        { 
+            get
             {
-                
-                if (IP!=null) MK = new MK(this.IP);
-                Connection = new RouterConnection(MK,Login,Password);
 
-                _connectCommand = new RelayCommand<object>( param => this.Connection.Connect(),
+                _connectCommand = new RelayCommand<object>( param => this.Connection.Connect(IP,Login,Password,MK),
                                                             param => this.CanExecuteConnection());
-
                 return _connectCommand;
             }
         }
-        public ICommand GetWlansCommand { get; set; }
+        public ICommand GetWlansCommand {
+            get
+            {
+                _getWlansCommand = new RelayCommand<object>(param => this.Connection.GetWlans(),
+                                                             param => this.CanExecuteGetWlans());
+                return _connectCommand;
+            }
+        }
         #endregion
 
         #region Can Execute Methods
@@ -103,8 +104,7 @@ namespace MikroTikSnooper
         }
         private bool CanExecuteConnection()
         {
-  
-            return MK != null && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Login);
+            return MK != null && !string.IsNullOrWhiteSpace(IP) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Login);
         }
 
         #endregion
